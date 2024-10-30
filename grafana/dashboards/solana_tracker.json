@@ -1,0 +1,190 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+      {
+        "title": "Active Wallets",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "count(solana_tracker_wallet_tracking_status == 1)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        }
+      },
+      {
+        "title": "Total Transactions",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(solana_tracker_wallet_transactions_total)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        }
+      },
+      {
+        "title": "Transactions per Minute",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(solana_tracker_transactions_processed_total[1m])) * 60",
+            "legendFormat": "Transactions/min"
+          }
+        ],
+        "options": {
+          "legend": {
+            "calcs": ["mean", "max"],
+            "displayMode": "table",
+            "placement": "bottom"
+          }
+        }
+      },
+      {
+        "title": "Average Processing Latency",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(solana_tracker_transaction_processing_latency_ms_sum[5m]) / rate(solana_tracker_transaction_processing_latency_ms_count[5m])",
+            "legendFormat": "{{wallet_address}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms"
+          }
+        }
+      },
+      {
+        "title": "Subscribers by Wallet",
+        "type": "bargauge",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "solana_tracker_wallet_subscribers_count",
+            "legendFormat": "{{wallet_address}}"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        }
+      },
+      {
+        "title": "Transactions by Wallet",
+        "type": "table",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "targets": [
+          {
+            "expr": "solana_tracker_wallet_transactions_total",
+            "instant": true,
+            "legendFormat": "{{wallet_address}}"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "renameByName": {
+                "Value": "Transactions",
+                "wallet_address": "Wallet"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "title": "Redis Publish Latency",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
+        "targets": [
+          {
+            "expr": "rate(solana_tracker_redis_publish_latency_ms_sum[5m]) / rate(solana_tracker_redis_publish_latency_ms_count[5m])",
+            "legendFormat": "{{channel}}"
+          }
+        ]
+      },
+      {
+        "title": "Error Rates",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        },
+        "targets": [
+          {
+            "expr": "rate(solana_tracker_subscription_errors_total[5m])",
+            "legendFormat": "Subscription - {{error_type}}"
+          },
+          {
+            "expr": "rate(solana_tracker_redis_errors_total[5m])",
+            "legendFormat": "Redis - {{operation}}"
+          },
+          {
+            "expr": "rate(solana_tracker_command_errors_total[5m])",
+            "legendFormat": "Command - {{command_type}}"
+          }
+        ]
+      }
+    ]
+  }

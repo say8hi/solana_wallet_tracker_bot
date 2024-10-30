@@ -8,14 +8,12 @@ from environs import Env
 class TgBot:
     token: str
     admin_ids: list[int]
-    channel_id: int
 
     @staticmethod
     def from_env(env: Env):
         token = env.str("BOT_TOKEN")
         admin_ids = list(map(int, env.list("ADMINS")))
-        channel_id = env.int("CHANNEL_ID")
-        return TgBot(token=token, admin_ids=admin_ids, channel_id=channel_id)
+        return TgBot(token=token, admin_ids=admin_ids)
 
 
 @dataclass
@@ -41,6 +39,8 @@ class Redis:
     redis_pass: Optional[str]
     redis_port: Optional[int]
     redis_host: Optional[str]
+    redis_tx_channel: Optional[str]
+    redis_cmd_channel: Optional[str]
 
     def dsn(self, database_num: int = 0) -> str:
         if self.redis_pass:
@@ -53,9 +53,15 @@ class Redis:
         redis_pass = env.str("REDIS_PASSWORD")
         redis_port = env.int("REDIS_PORT")
         redis_host = env.str("REDIS_HOST")
+        redis_tx_channel = env.str("REDIS_TX_CHANNEL")
+        redis_cmd_channel = env.str("REDIS_CMD_CHANNEL")
 
         return Redis(
-            redis_pass=redis_pass, redis_port=redis_port, redis_host=redis_host
+            redis_pass=redis_pass,
+            redis_port=redis_port,
+            redis_host=redis_host,
+            redis_cmd_channel=redis_cmd_channel,
+            redis_tx_channel=redis_tx_channel,
         )
 
 

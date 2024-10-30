@@ -93,7 +93,7 @@ class TgBot:
         if self.bot:
             await self.bot.session.close()
         if self.redis:
-            await self.redis.aclose()
+            await self.redis.close()
         if self.pubsub:
             await self.pubsub.unsubscribe()
 
@@ -150,19 +150,13 @@ class TgBot:
 
                 data = json.loads(message["data"])
 
-                text = f"🔔 Новая транзакция!\n" f"Signature: `{data['signature']}`\n"
-
-                if data.get("amount"):
-                    text += f"Сумма: {data['amount']} SOL\n"
-
-                text += f"\n[Просмотр транзакции](https://solscan.io/tx/{data['signature']})"
+                text = f"transaction for the address: {data['address']}"
 
                 for chat_id in data["chat_ids"]:
                     try:
                         await self.bot.send_message(
                             chat_id=chat_id,
                             text=text,
-                            parse_mode=types.ParseMode.MARKDOWN,
                             disable_web_page_preview=True,
                         )
                     except Exception as e:

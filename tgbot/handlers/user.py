@@ -70,7 +70,7 @@ async def add_new_address_receive_value(
     for address in addresses:
         sol_address, name = address.split()
         try:
-            b58decode(sol_address)
+            # b58decode(sol_address)
             if len(sol_address) != 44:
                 raise ValueError
         except Exception:
@@ -79,19 +79,17 @@ async def add_new_address_receive_value(
 
         addresses_dict[name] = sol_address
 
-        command = {"action": "add", "address": sol_address, "user_id": message.chat.id}
+        command = {"action": "add", "address": sol_address, "chat_id": message.chat.id}
 
         await redis.publish("wallet_commands", json.dumps(command))
 
-    msg = await message.bot.edit_message_text(
+    await message.delete()
+    await message.bot.edit_message_text(
         chat_id=message.chat.id,
         message_id=edit_msg_id,
         text="Successfully added",
         reply_markup=cancel_menu("close"),
     )
-
-    await state.set_state(AddNewAddress.receive_value)
-    await state.update_data(edit_msg_id=msg.message_id)
 
 
 @user_router.callback_query(F.data == "personal_acc")
